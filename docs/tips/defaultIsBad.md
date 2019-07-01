@@ -59,7 +59,7 @@ You don't get typos like one dev doing `import Foo from "./foo";` and another do
 Auto import quickfix works better. You use `Foo` and auto import will write down `import { Foo } from "./foo";` cause its a well defined name exported from a module. Some tools out there will try to magic read and *infer* a name for a default export but magic is flaky.
 
 ### Re-exporting
-Re-exporting is unnecessarily hard. Re-exporting is common for the root `index` file in npm packages e.g. `import Foo from "./foo"; export { Foo }` (with default) vs. `export * from "./foo"` (with named exports).
+Re-exporting is common for the root `index` file in npm packages, and forces you to name the default export manually e.g. `export { default as Foo } from "./foo";` (with default) vs. `export * from "./foo"` (with named exports).
 
 ### Dynamic Imports
 Default exports expose themselves badly named as `default` in dynamic `import`s e.g. 
@@ -67,4 +67,32 @@ Default exports expose themselves badly named as `default` in dynamic `import`s 
 ```
 const HighChart = await import('https://code.highcharts.com/js/es-modules/masters/highcharts.src.js');
 Highcharts.default.chart('container', { ... }); // Notice `.default`
+```
+
+### Needs two lines for non-class / non-function
+
+Can be one statement for function / class e.g. 
+
+```ts
+export default function foo() {
+}
+```
+
+Can be one statement for *non named / type annotated* objects e.g.: 
+
+```ts
+export default {
+  notAFunction: 'Yeah, I am not a function or a class',
+  soWhat: 'The export is now *removed* from the declaration'
+};
+```
+
+But needs two statements otherwise:
+```ts
+// If you need to name it (here `foo`) for local use OR need to annotate type (here `Foo`)
+const foo: Foo = {
+  notAFunction: 'Yeah, I am not a function or a class',
+  soWhat: 'The export is now *removed* from the declaration'
+};
+export default foo;
 ```

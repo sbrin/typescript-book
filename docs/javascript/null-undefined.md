@@ -1,4 +1,7 @@
 ## Null and Undefined
+
+> [Free youtube video on the subject](https://www.youtube.com/watch?v=kaUfBNzuUAI)
+
 JavaScript (and by extension TypeScript) has two bottom types : `null` and `undefined`. They are *intended* to mean different things:
 
 * Something hasn't been initialized : `undefined`.
@@ -102,6 +105,17 @@ function toInt(str: string): { valid: boolean, int?: number } {
 }
 ```
 
+### JSON and serialization
+
+The JSON standard has support for encoding `null` but not `undefined`. When JSON-encoding an object with an attribute that is `null`, the attribute will be included with its null value, whereas an attribute with an `undefined` value will be excluded entirely.
+
+```ts
+JSON.stringify({willStay: null, willBeGone: undefined}); // {"willStay":null}
+```
+
+As a result, JSON-based databases may support `null` values but not `undefined` values. Since attributes set to `null` are encoded, you can transmit the intent to clear an attribute by settings its value to `null` before encoding and transmitting the object to a remote store.
+
+Setting attribute values to undefined can save of storage and transmission costs, as the attribute names will not be encoded. However, this can complicate the semantics of clearing values vs. absent values.
 
 ### Final thoughts
 TypeScript team doesn't use `null` : [TypeScript coding guidelines](https://github.com/Microsoft/TypeScript/wiki/Coding-guidelines#null-and-undefined) and it hasn't caused any problems. Douglas Crockford thinks [`null` is a bad idea](https://www.youtube.com/watch?v=PSGEjv3Tqo0&feature=youtu.be&t=9m21s) and we should all just use `undefined`.

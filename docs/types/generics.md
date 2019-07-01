@@ -14,8 +14,8 @@ Consider the simple `Queue` (first in, first out) data structure implementation.
 ```ts
 class Queue {
   private data = [];
-  push = (item) => this.data.push(item);
-  pop = () => this.data.shift();
+  push(item) { this.data.push(item); }
+  pop() { return this.data.shift(); }
 }
 ```
 
@@ -24,8 +24,8 @@ One issue with this implementation is that it allows people to add *anything* to
 ```ts
 class Queue {
   private data = [];
-  push = (item) => this.data.push(item);
-  pop = () => this.data.shift();
+  push(item) { this.data.push(item); }
+  pop() { return this.data.shift(); }
 }
 
 const queue = new Queue();
@@ -40,10 +40,9 @@ console.log(queue.pop().toPrecision(1)); // RUNTIME ERROR
 One solution (and in fact the only one in languages that don't support generics) is to go ahead and create *special* classes just for these constraints. E.g. a quick and dirty number queue:
 
 ```ts
-class QueueNumber {
-  private data = [];
-  push = (item: number) => this.data.push(item);
-  pop = (): number => this.data.shift();
+class QueueNumber extends Queue {
+  push(item: number) { super.push(item); }
+  pop(): number { returnthis.data.shift(); }
 }
 
 const queue = new QueueNumber();
@@ -59,8 +58,8 @@ Of course this can quickly become painful e.g. if you want a string queue you ha
 /** A class definition with a generic parameter */
 class Queue<T> {
   private data = [];
-  push = (item: T) => this.data.push(item);
-  pop = (): T => this.data.shift();
+  push(item: T) { this.data.push(item); }
+  pop(): T | undefined { return this.data.shift(); }
 }
 
 /** Again sample usage */
@@ -110,18 +109,6 @@ class Utility {
 
 > TIP: You can call the generic parameter whatever you want. It is conventional to use `T`, `U`, `V` when you have simple generics. If you have more than one generic argument try to use meaningful names e.g. `TKey` and `TValue` (conventional to prefix with `T` as generics are also called *templates* in other languages e.g. C++).
 
-## Useless Generic
-
-I've seen people use generics just for the heck of it. The question to ask is *what constraint are you trying to describe*. If you can't answer it easily you might have a useless generic. E.g. the following function
-
-```ts
-declare function foo<T>(arg: T): void;
-```
-Here the generic `T` is completely useless as it is only used in a *single* argument position. It might as well be: 
-
-```ts
-declare function foo(arg: any): void;
-```
 
 ### Design Pattern: Convenience generic
 
@@ -173,3 +160,19 @@ function loadUsers() {
 ```
 
 Also `Promise<T>` as a return value is definitely better than alternatives like `Promise<any>`.
+
+Another example is where a generic is only used as an argument: 
+
+```ts
+declare function send<T>(arg: T): void;
+```
+
+Here the generic `T` can be used to annote the type that you want the argument to match e.g. 
+
+```ts
+send<Something>({
+  x:123,
+  // Also you get autocomplete  
+}); // Will TSError if `x:123` does not match the structure expected for Something
+
+```
