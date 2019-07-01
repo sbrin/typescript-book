@@ -14,7 +14,7 @@ function outerFunction(arg) {
     bar();
 }
 
-outerFunction("hello closure"); // logs hello closure!
+outerFunction("hello closure!"); // выведет "hello closure!"
 ```
 
 Как видите, внутренняя функция имеет доступ к переменной (variableInOuterFunction) из внешней области. Переменные во внешней функции замкнуты (или связаны) внутренней функцией. Отсюда и термин **замыкание**. Сама концепция довольно проста и интуитивно понятна.
